@@ -1,0 +1,10 @@
+venv
+node_modules
+target
+
+# exclude compiled files and directories for specific languages
+golang
+python
+java
+
+

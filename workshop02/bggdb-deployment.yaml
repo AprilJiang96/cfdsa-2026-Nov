@@ -15,7 +15,7 @@ spec:
         app: bggdb
     spec:
       containers:
-        - name: bggdb
+        - name: bggdb-container
           image: stackupiss/bgg-database:v1
           imagePullPolicy: IfNotPresent
           ports:

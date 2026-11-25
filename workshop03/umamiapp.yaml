@@ -49,6 +49,15 @@ spec:
             failureThreshold: 3
             periodSeconds: 10
             timeoutSeconds: 10
+          resources:
+            # lower bound
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            # upper bound
+            limits:
+              cpu: 500m
+              memory: 512Mi
 
 ---
 apiVersion: v1
@@ -71,7 +80,7 @@ metadata:
   namespace: workshop03
 spec:
   hostnames:
-    - 'umami-172.25.0.4.nip.io'
+    - 'umami.172.25.0.4.nip.io'
   parentRefs:
     - name: default-gateway
       namespace: default
@@ -85,3 +94,25 @@ spec:
         - name: umamiapp-svc
           namespace: workshop03
           port: 3000
+
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: umamiapp-hpa
+  namespace: workshop03
+spec:
+  minReplicas: 1
+  maxReplicas: 4
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: umamiapp-deploy
+  metrics:
+    - type: Resource
+      resource:
+       # when CPU utilization exceeds 80%, the HPA will scale up the number of replicas
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 80
